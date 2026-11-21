@@ -1,0 +1,39 @@
+
+name: Build Outfit Buddy APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Extract project
+        run: |
+          mkdir project
+          unzip -o OutfitBuddy_Phone_Cloud_Build.zip -d project
+
+      - name: Build APK
+        run: |
+          cd project
+          gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Outfit-Buddy-APK
+          path: project/app/build/outputs/apk/debug/*.apk
+          
